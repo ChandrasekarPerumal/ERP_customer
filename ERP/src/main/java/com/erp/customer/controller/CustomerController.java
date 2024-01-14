@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.erp.customer.entity.Customer;
+import com.erp.customer.exception.CustomerIdNotFoundException;
 import com.erp.customer.exception.UniqueConstraintViolationException;
 import com.erp.customer.service.CustomerServiceImpl;
 
@@ -35,13 +37,12 @@ public class CustomerController {
 			Customer customer = customerService.getCustomerById(customerId);
 			if (customer != null) {
 				return new ResponseEntity<>(customer, HttpStatus.OK);
-			}else {
+			} else {
 				return new ResponseEntity<>(" Customer not found with ID:" + customerId, HttpStatus.NOT_FOUND);
 			}
 		} catch (Exception e) {
 			return new ResponseEntity<>("Server-side error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
 
 	}
 
@@ -75,7 +76,16 @@ public class CustomerController {
 	// Delete the customer data using customer-id
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteCustomerById(@PathVariable int id) {
-		return null;
+		try {
+			customerService.deleteCustomerById(id);
+			return new ResponseEntity<>("Deleted Customer with ID :" + id, HttpStatus.OK);
+		} catch (CustomerIdNotFoundException e) {
+//			throw new CustomerIdNotFoundException("Customer not found with the given ID");
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+		} catch (Exception e) {
+			return new ResponseEntity<>("Server-side error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
 	}
 
 }

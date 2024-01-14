@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.erp.customer.dao.CustomerDAO;
 import com.erp.customer.entity.Customer;
+import com.erp.customer.exception.CustomerIdNotFoundException;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -26,6 +27,20 @@ public class CustomerServiceImpl implements CustomerService {
 	@Override
 	public Customer getCustomerById(long id) {
 		return customerDAO.findById(id).get();
+	}
+
+	@Override
+	public void deleteCustomerById(long id) {
+		if (!customerDAO.existsById(id)) {
+			throw new CustomerIdNotFoundException("Customer not found with ID: "+id);
+		}
+		customerDAO.deleteById(id);
+	}
+
+	@Override
+	public Customer updateCusotmerById(long id, Customer cusomer) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

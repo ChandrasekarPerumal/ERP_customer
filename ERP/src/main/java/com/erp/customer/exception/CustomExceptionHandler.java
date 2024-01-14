@@ -17,4 +17,14 @@ public class CustomExceptionHandler {
         return new ResponseEntity<>(errorMessage, HttpStatus.CONFLICT); 
     }
 	
+	
+	@ExceptionHandler(CustomerIdNotFoundException.class)
+	public ResponseEntity<String> handleIdNotFoundException(
+            CustomerIdNotFoundException ex) {
+        String errorMessage = "Customer not found with the given ID ";
+        return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
+        }
+	
+	
+	
 }
