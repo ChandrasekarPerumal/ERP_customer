@@ -33,7 +33,7 @@ public class CustomerServiceImpl implements CustomerService {
 	@Override
 	public void deleteCustomerById(long id) {
 		if (!customerDAO.existsById(id)) {
-			throw new CustomerIdNotFoundException("Customer not found with ID: " + id);
+			throw new CustomerIdNotFoundException();
 		}
 		customerDAO.deleteById(id);
 	}
@@ -41,7 +41,7 @@ public class CustomerServiceImpl implements CustomerService {
 	@Override
 	public Customer updateCusotmerById(long id, Customer customer) {
 		if (!customerDAO.existsById(id)) {
-			throw new CustomerIdNotFoundException("Customer not found with ID: " + id);
+			throw new CustomerIdNotFoundException();
 		} else {
 
 			// Get customers existing details
@@ -56,7 +56,7 @@ public class CustomerServiceImpl implements CustomerService {
 			}
 			if (customer.getPhoneNumber() != null) {
 				if (customer.getPhoneNumber().length() != 10) {
-					throw new PhoneNumberNotValidException("");
+					throw new PhoneNumberNotValidException();
 				}
 				existCustomer.setName(customer.getPhoneNumber());
 			}

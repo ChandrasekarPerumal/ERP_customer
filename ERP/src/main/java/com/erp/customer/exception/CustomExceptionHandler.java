@@ -13,7 +13,7 @@ public class CustomExceptionHandler {
 	@ExceptionHandler(UniqueConstraintViolationException.class)
     public ResponseEntity<String> handleUniqueConstraintViolationException(
             UniqueConstraintViolationException constraintViolationException) {
-        String errorMessage = constraintViolationException.getMessage();
+        String errorMessage = "Email Id is not unique";
         return new ResponseEntity<>(errorMessage, HttpStatus.CONFLICT); 
     }
 	

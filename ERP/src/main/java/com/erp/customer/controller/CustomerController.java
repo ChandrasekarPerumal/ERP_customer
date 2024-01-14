@@ -55,14 +55,14 @@ public class CustomerController {
 	public ResponseEntity<String> saveCustomerData(@RequestBody Customer customer) {
 		try {
 			if (customer.getPhoneNumber().length() != 10) {
-				throw new PhoneNumberNotValidException("");
+				throw new PhoneNumberNotValidException();
 			}
 			customerService.saveCustomerData(customer);
 			return new ResponseEntity<>("Customer detail saved successfully", HttpStatus.CREATED);
-		} catch (DataIntegrityViolationException e) {
-			throw new UniqueConstraintViolationException("Email address must be unique");
+		} catch (UniqueConstraintViolationException e) {
+			throw new UniqueConstraintViolationException();
 		} catch (PhoneNumberNotValidException e) {
-			throw new UniqueConstraintViolationException("Phone Number is not valid");
+			throw new PhoneNumberNotValidException();
 		} catch (Exception e) {
 			return new ResponseEntity<>("Server-side error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -73,16 +73,18 @@ public class CustomerController {
 	public ResponseEntity<String> saveCustomerList(@RequestBody List<Customer> customerList) {
 		try {
 			customerList.forEach((customer) -> {
-				if (  customer.getPhoneNumber().length() != 10) {
-					throw new PhoneNumberNotValidException("");
+				if (customer.getPhoneNumber().length() != 10) {
+					throw new PhoneNumberNotValidException();
 				}
 				customerService.saveCustomerData(customer);
 			});
 			return new ResponseEntity<>("Customer detail saved successfully", HttpStatus.CREATED);
-		} catch (DataIntegrityViolationException e) {
-			throw new UniqueConstraintViolationException("Email address must be unique");
+		} catch (UniqueConstraintViolationException e) {
+			throw new UniqueConstraintViolationException();
+
 		} catch (PhoneNumberNotValidException e) {
-			throw new UniqueConstraintViolationException("Phone Number is not valid");
+			throw new PhoneNumberNotValidException();
+
 		} catch (Exception e) {
 			return new ResponseEntity<>("Server-side error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -96,18 +98,17 @@ public class CustomerController {
 			customerService.updateCusotmerById(id, customer);
 			return new ResponseEntity<>(" Customer details updated successfully ", HttpStatus.OK);
 		} catch (PhoneNumberNotValidException e) {
-			throw new UniqueConstraintViolationException("Phone Number is not valid");
+			throw new PhoneNumberNotValidException();
 		} catch (CustomerIdNotFoundException e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+			throw new CustomerIdNotFoundException();
 		} catch (Exception e) {
 			return new ResponseEntity<>("Failed to update customer detail", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
 
-	
 	/* Update more than one customer data */
-	@PutMapping("/bulk-change")
+	@PutMapping("/bulk-update")
 	public ResponseEntity<String> updateCustomerById(@RequestBody List<Customer> customerList) {
 		try {
 			customerList.forEach((customer) -> {
@@ -115,11 +116,12 @@ public class CustomerController {
 			});
 			return new ResponseEntity<>(" Customer details updated successfully ", HttpStatus.OK);
 		} catch (PhoneNumberNotValidException e) {
-			throw new UniqueConstraintViolationException("Phone Number is not valid");
+			throw new UniqueConstraintViolationException();
+//			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 		} catch (CustomerIdNotFoundException e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+			throw new CustomerIdNotFoundException();
+
 		} catch (Exception e) {
-			e.printStackTrace();
 			return new ResponseEntity<>("Failed to update customer detail", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
@@ -132,8 +134,8 @@ public class CustomerController {
 			customerService.deleteCustomerById(id);
 			return new ResponseEntity<>("Deleted Customer with ID :" + id, HttpStatus.OK);
 		} catch (CustomerIdNotFoundException e) {
-//			throw new CustomerIdNotFoundException("Customer not found with the given ID");
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+			throw new CustomerIdNotFoundException();
+
 		} catch (Exception e) {
 			return new ResponseEntity<>("Server-side error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
