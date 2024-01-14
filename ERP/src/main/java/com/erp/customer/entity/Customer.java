@@ -32,7 +32,7 @@ public class Customer implements Serializable {
 	private String name;
 	
 	@Email
-	@Column(name = "email_id")
+	@Column(name = "email_id",unique = true,nullable = false)
 	private String emailId;
 	
 	@Size(min = 10,max = 10,message = "Phone number should be 10 digits")
