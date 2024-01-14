@@ -58,7 +58,7 @@ public class CustomerController {
 				throw new PhoneNumberNotValidException("");
 			}
 			customerService.saveCustomerData(customer);
-			return new ResponseEntity<>("Customer detail saved successfully", HttpStatus.OK);
+			return new ResponseEntity<>("Customer detail saved successfully", HttpStatus.CREATED);
 		} catch (DataIntegrityViolationException e) {
 			throw new UniqueConstraintViolationException("Email address must be unique");
 		} catch (PhoneNumberNotValidException e) {
@@ -78,7 +78,7 @@ public class CustomerController {
 				}
 				customerService.saveCustomerData(customer);
 			});
-			return new ResponseEntity<>("Customer detail saved successfully", HttpStatus.OK);
+			return new ResponseEntity<>("Customer detail saved successfully", HttpStatus.CREATED);
 		} catch (DataIntegrityViolationException e) {
 			throw new UniqueConstraintViolationException("Email address must be unique");
 		} catch (PhoneNumberNotValidException e) {
