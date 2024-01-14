@@ -41,19 +41,20 @@ public class CustomerController {
 	// Get all the customer
 	@GetMapping("/")
 	public List<?> getAll() {
-		return null;
+		return customerService.getAllCustomer();
 	}
 
 	// Store new customer data
 	@PostMapping("/new")
 	public ResponseEntity<String> saveCustomerData(@Valid @RequestBody Customer customer) {
 		try {
+
 			customerService.saveCustomerData(customer);
 			return new ResponseEntity<>("Customer detail saved successfully", HttpStatus.OK);
 		} catch (DataIntegrityViolationException e) {
 			throw new UniqueConstraintViolationException("Email address must be unique");
 		} catch (Exception e) {
-			return new ResponseEntity<>("Server-side error: "+ e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>("Server-side error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
