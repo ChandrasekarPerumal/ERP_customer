@@ -12,19 +12,26 @@ public class CustomExceptionHandler {
 	/* Exception for Unique value constraint */
 	@ExceptionHandler(UniqueConstraintViolationException.class)
     public ResponseEntity<String> handleUniqueConstraintViolationException(
-            UniqueConstraintViolationException ex) {
-        String errorMessage = ex.getMessage();
+            UniqueConstraintViolationException constraintViolationException) {
+        String errorMessage = constraintViolationException.getMessage();
         return new ResponseEntity<>(errorMessage, HttpStatus.CONFLICT); 
     }
 	
-	
+	/* Customer ID is not found  */
 	@ExceptionHandler(CustomerIdNotFoundException.class)
 	public ResponseEntity<String> handleIdNotFoundException(
-            CustomerIdNotFoundException ex) {
+            CustomerIdNotFoundException idNotFoundException) {
         String errorMessage = "Customer not found with the given ID ";
         return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
         }
 	
-	
+	//
+	@ExceptionHandler(PhoneNumberNotValidException.class)
+	public ResponseEntity<String> handlePhoneNumberException(PhoneNumberNotValidException notValidException){
+		String errorMessage = "Invalid phone number ";
+		
+		return new ResponseEntity<>(errorMessage,HttpStatus.BAD_REQUEST);
+		
+	}
 	
 }

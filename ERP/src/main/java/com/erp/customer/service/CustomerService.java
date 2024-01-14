@@ -20,6 +20,6 @@ public interface CustomerService {
 	void deleteCustomerById(long id);
 	
 	// Update Customer by ID
-	Customer updateCusotmerById(long id,Customer cusomer);
+	Customer updateCusotmerById(long id,Customer customer);
 	
 }

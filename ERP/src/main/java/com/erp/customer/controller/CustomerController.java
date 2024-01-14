@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,10 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.erp.customer.entity.Customer;
 import com.erp.customer.exception.CustomerIdNotFoundException;
+import com.erp.customer.exception.PhoneNumberNotValidException;
 import com.erp.customer.exception.UniqueConstraintViolationException;
 import com.erp.customer.service.CustomerServiceImpl;
-
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("erp/api/v1/customers")
@@ -54,23 +52,77 @@ public class CustomerController {
 
 	// Store new customer data
 	@PostMapping("/new")
-	public ResponseEntity<String> saveCustomerData(@Valid @RequestBody Customer customer) {
+	public ResponseEntity<String> saveCustomerData(@RequestBody Customer customer) {
 		try {
-
+			if (customer.getPhoneNumber().length() != 10) {
+				throw new PhoneNumberNotValidException("");
+			}
 			customerService.saveCustomerData(customer);
 			return new ResponseEntity<>("Customer detail saved successfully", HttpStatus.OK);
 		} catch (DataIntegrityViolationException e) {
 			throw new UniqueConstraintViolationException("Email address must be unique");
+		} catch (PhoneNumberNotValidException e) {
+			throw new UniqueConstraintViolationException("Phone Number is not valid");
 		} catch (Exception e) {
 			return new ResponseEntity<>("Server-side error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
 
+	/* Save more than one customer data */
+	@PostMapping("/bulk-load")
+	public ResponseEntity<String> saveCustomerList(@RequestBody List<Customer> customerList) {
+		try {
+			customerList.forEach((customer) -> {
+				if (  customer.getPhoneNumber().length() != 10) {
+					throw new PhoneNumberNotValidException("");
+				}
+				customerService.saveCustomerData(customer);
+			});
+			return new ResponseEntity<>("Customer detail saved successfully", HttpStatus.OK);
+		} catch (DataIntegrityViolationException e) {
+			throw new UniqueConstraintViolationException("Email address must be unique");
+		} catch (PhoneNumberNotValidException e) {
+			throw new UniqueConstraintViolationException("Phone Number is not valid");
+		} catch (Exception e) {
+			return new ResponseEntity<>("Server-side error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	// Update the customer data using customer-id
 	@PutMapping("/{id}")
-	public ResponseEntity<String> updateCustomerById() {
-		return null;
+	public ResponseEntity<String> updateCustomerById(@PathVariable int id, @RequestBody Customer customer) {
+		try {
+			customer.setId(id);
+			customerService.updateCusotmerById(id, customer);
+			return new ResponseEntity<>(" Customer details updated successfully ", HttpStatus.OK);
+		} catch (PhoneNumberNotValidException e) {
+			throw new UniqueConstraintViolationException("Phone Number is not valid");
+		} catch (CustomerIdNotFoundException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+		} catch (Exception e) {
+			return new ResponseEntity<>("Failed to update customer detail", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+
+	
+	/* Update more than one customer data */
+	@PutMapping("/bulk-change")
+	public ResponseEntity<String> updateCustomerById(@RequestBody List<Customer> customerList) {
+		try {
+			customerList.forEach((customer) -> {
+				customerService.updateCusotmerById(customer.getId(), customer);
+			});
+			return new ResponseEntity<>(" Customer details updated successfully ", HttpStatus.OK);
+		} catch (PhoneNumberNotValidException e) {
+			throw new UniqueConstraintViolationException("Phone Number is not valid");
+		} catch (CustomerIdNotFoundException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>("Failed to update customer detail", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
 	}
 
 	// Delete the customer data using customer-id
