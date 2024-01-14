@@ -1,6 +1,7 @@
 package com.erp.customer.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,8 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Override
 	public Customer getCustomerById(long id) {
-		return customerDAO.findById(id).get();
+		return customerDAO.findById(id).orElseThrow(()-> new CustomerIdNotFoundException());
+		
 	}
 
 	@Override

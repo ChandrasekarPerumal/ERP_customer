@@ -32,15 +32,14 @@ public class CustomerController {
 	@GetMapping("/{customerId}")
 	public ResponseEntity<?> getCustomerById(@PathVariable long customerId) {
 		try {
-			Customer customer = customerService.getCustomerById(customerId);
-			if (customer != null) {
-				return new ResponseEntity<>(customer, HttpStatus.OK);
-			} else {
-				return new ResponseEntity<>(" Customer not found with ID:" + customerId, HttpStatus.NOT_FOUND);
-			}
+			return new ResponseEntity<>(customerService.getCustomerById(customerId), HttpStatus.OK);
+		} catch (CustomerIdNotFoundException e) {
+			throw new CustomerIdNotFoundException();
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new ResponseEntity<>("Server-side error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+//		return null;
 
 	}
 
