@@ -28,18 +28,25 @@ public class CustomerController {
 	@Autowired
 	private CustomerServiceImpl customerService;
 
-//	public CustomerController(CustomerService customerService){	
-//		this.customerService = customerService;		
-//	}
-
 	// Get customer data by using customer-id
-	@GetMapping("/{id}")
-	public ResponseEntity<?> getCustomerById() {
-		return null;
+	@GetMapping("/{customerId}")
+	public ResponseEntity<?> getCustomerById(@PathVariable long customerId) {
+		try {
+			Customer customer = customerService.getCustomerById(customerId);
+			if (customer != null) {
+				return new ResponseEntity<>(customer, HttpStatus.OK);
+			}else {
+				return new ResponseEntity<>(" Customer not found with ID:" + customerId, HttpStatus.NOT_FOUND);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>("Server-side error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+
 	}
 
 	// Get all the customer
-	@GetMapping("/")
+	@GetMapping()
 	public List<?> getAll() {
 		return customerService.getAllCustomer();
 	}

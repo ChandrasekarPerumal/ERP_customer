@@ -20,14 +20,12 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Override
 	public List<Customer> getAllCustomer() {
-		
 		return customerDAO.findAll();
 	}
 
 	@Override
 	public Customer getCustomerById(long id) {
-		
-		return null;
+		return customerDAO.findById(id).get();
 	}
 
 }
